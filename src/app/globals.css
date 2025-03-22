@@ -1,5 +1,12 @@
 @import "tailwindcss";
 
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+
+
+
 @theme {
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
@@ -7,12 +14,12 @@
 
 :root {
   --background: #ffffff;
-  --foreground: #171717;
+  --foreground: rgb(18, 52, 82);
 }
 
 @media (prefers-color-scheme: dark) {
   :root {
-    --background: #0a0a0a;
+    --background:rgb(18, 52, 82);
     --foreground: #ededed;
   }
 }
