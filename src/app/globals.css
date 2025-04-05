@@ -15,6 +15,16 @@
 :root {
   --background: #ffffff;
   --foreground: rgb(18, 52, 82);
+
+  /* カスタムカラー変数を追加 */
+  --color-custom-blue: #9BC8BE;
+  --color-custom-red: #FF6567;
+  --color-custom-purple: #B900FF;
+
+  --color-custom-blue-light:rgba(155, 200, 190, 0.47);
+  --color-custom-red-light:rgba(255, 101, 103, 0.49);
+  --color-custom-purple-light:rgba(185, 0, 255, 0.52);
+
 }
 
 @media (prefers-color-scheme: dark) {
@@ -28,4 +38,26 @@ body {
   color: var(--foreground);
   background: var(--background);
   font-family: Arial, Helvetica, sans-serif;
+}
+
+@layer utilities {
+  .bg-custom-red {
+    background-color: var(--color-custom-red);
+  }
+  .bg-custom-blue {
+    background-color: var(--color-custom-blue);
+  }
+  .bg-custom-purple {
+    background-color: var(--color-custom-purple);
+  }  
+  
+  .bg-custom-red-light {
+    background-color: var(--color-custom-red-light);
+  }
+  .bg-custom-blue-light {
+    background-color: var(--color-custom-blue-light);
+  }
+  .bg-custom-purple-light {
+    background-color: var(--color-custom-purple-light);
+  }
 }
