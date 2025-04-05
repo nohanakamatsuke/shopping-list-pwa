@@ -50,6 +50,16 @@ body {
   .bg-custom-purple {
     background-color: var(--color-custom-purple);
   }  
+
+  .text-custom-red {
+    color: var(--color-custom-red);
+  }
+  .text-custom-blue {
+    color: var(--color-custom-blue);
+  }
+  .text-custom-purple {
+    color: var(--color-custom-purple);
+  } 
   
   .bg-custom-red-light {
     background-color: var(--color-custom-red-light);

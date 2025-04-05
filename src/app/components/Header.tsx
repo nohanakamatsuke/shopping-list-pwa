@@ -45,11 +45,11 @@ const Header: React.FC = () => {
   return (
     <header className='w-full py-5'>
       <div className='container mx-auto px-4 flex justify-between items-center'>
-        <h1 className='text-2xl'>Shopping List</h1>
-        <div className='flex space-x-2 md:space-x-5 xl:space-x-10'>
+        <h1 className='text-3xl text-custom-blue font-black'>Shopping List</h1>
+        <div className='flex space-x-4 md:space-x-5 xl:space-x-10 pr-2'>
           {isLoggedIn && (
             <>
-              <PlusIcon className='w-10 md:w-12'/>
+              <PlusIcon className='w-10 md:w-12 text-custom-blue hover:bg-blue-300 hover:text-white rounded-full'/>
               <UserCircleIcon className='w-10 md:w-12'/>
             </>
           )}
