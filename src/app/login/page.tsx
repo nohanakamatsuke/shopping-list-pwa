@@ -46,7 +46,7 @@ const LoginPage: React.FC = () => {
             onChange={(e) => setPassword(e.target.value)}
             className="w-full p-3 rounded text-black bg-white focus:outline-none text-black"/>
 					</div>
-					<button type="submit" className='w-full mt-5 px-2 py-3 bg-[#FF5154] rounded-full text-lg font-bold'>ログイン</button>
+					<button type="submit" className='w-full mt-5 px-2 py-3 bg-custom-red rounded-full text-lg font-bold'>ログイン</button>
 					<div className="mt-6 text-center">
             <Link href="/register" className="text-white text-base">
             アカウント作成はこちら
