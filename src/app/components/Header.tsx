@@ -50,7 +50,7 @@ const Header: React.FC = () => {
           {isLoggedIn && (
             <>
               <PlusIcon className='w-10 md:w-12 text-custom-blue hover:bg-blue-300 hover:text-white rounded-full'/>
-              <UserCircleIcon className='w-10 md:w-12'/>
+              <UserCircleIcon className='w-10 md:w-12 text-custom-blue hover:bg-blue-300 hover:text-white rounded-full'/>
             </>
           )}
         </div> 
