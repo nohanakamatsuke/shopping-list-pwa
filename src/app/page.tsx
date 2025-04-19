@@ -1,19 +1,10 @@
 import ShopListClient from "./components/ShopListClient";
 
-interface Items {
-  id: string;
-  // name: string;
-}
 
-interface HomeProps {
-  items: Items[];
-}
-
-
-export default async function Home({items}: HomeProps) {
+export default async function Home() {
 
   return (
     <ShopListClient />
-  );
+  ); 
 }
 
