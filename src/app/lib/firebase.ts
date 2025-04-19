@@ -2,12 +2,6 @@
 import { initializeApp, getApps } from "firebase/app";
 import { getAuth } from "firebase/auth";
 import { getFirestore } from "firebase/firestore";
-import { getAnalytics } from "firebase/analytics";
-// TODO: Add SDKs for Firebase products that you want to use
-// https://firebase.google.com/docs/web/setup#available-libraries
-
-// Your web app's Firebase configuration
-// For Firebase JS SDK v7.20.0 and later, measurementId is optional
 
 const firebaseConfig = {
   apiKey: process.env.NEXT_PUBLIC_FIREBASE_API_KEY,
@@ -19,16 +13,10 @@ const firebaseConfig = {
   measurementId: process.env.NEXT_PUBLIC_FIREBASE_MEASUREMENT_ID
 };
 
-
-// Firebase初期化（既に初期化されている場合は既存のインスタンスを使用）
-const app = !getApps().length ? initializeApp(firebaseConfig) : getApps()[0];
+// Firebase初期化
+const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 const db = getFirestore(app);
 
-// クライアントサイドでのみanalyticsを初期化
-let analytics = null;
-if (typeof window !== 'undefined') {
-  analytics = getAnalytics(app);
-}
 
-export { app, auth, db, analytics };
+export { app, auth, db };
