@@ -41,7 +41,7 @@ export default function ItemListClient(){
       }  
     }
     fetchData();
-  }, []);
+  }, [shopId]);
 
   if (loading) {
     return <div>読み込み中...</div>;
