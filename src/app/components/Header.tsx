@@ -1,8 +1,10 @@
 'use client';
+
 import React, { useEffect, useState } from 'react';
 import { PlusIcon, UserCircleIcon } from '@heroicons/react/24/outline';
 import { onAuthStateChanged } from 'firebase/auth';
 import { auth } from '../lib/firebase';
+import Link from 'next/link';
 
 const Header: React.FC = () => {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
@@ -45,7 +47,9 @@ const Header: React.FC = () => {
   return (
     <header className='w-full py-5'>
       <div className='container mx-auto px-4 flex justify-between items-center'>
-        <h1 className='text-3xl text-custom-blue font-black'>Shopping List</h1>
+        <Link href="/">
+          <h1 className='text-3xl text-custom-blue font-black'>Shopping List</h1>
+        </Link>
         <div className='flex space-x-4 md:space-x-5 xl:space-x-10 pr-2'>
           {isLoggedIn && (
             <>
