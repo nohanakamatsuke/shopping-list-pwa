@@ -1,12 +1,12 @@
 'use client';
 
-import { useEffect, useState } from "react";
-import { getAllItemsByShopId, updateItemCheckStatus } from "../lib/itemListService";
+import { useCallback, useEffect, useState } from "react";
+import { deleteItem, getAllItemsByShopId, updateItemCheckStatus } from "../lib/itemListService";
 import { useParams } from "next/navigation";
 import { getShopById } from "../lib/shopService";
 import { PlusIcon } from "@heroicons/react/16/solid";
 import { useRouter } from "next/navigation";
-import { useSwipeable } from "react-swipeable";
+import SwipeableItem from "./SwipeableItem";
 
 export default function ItemListClient(){
 
@@ -81,13 +81,20 @@ export default function ItemListClient(){
   ? items.filter(item => !item.is_checked) 
   : items;
 
-  //アイテムの削除処理
- const swipeHandlers = useSwipeable({
-  onSwipedLeft: () => ,
-  trackMouse: true,
- })
-
-
+  // アイテム削除処理
+  const handleDeleteItem = useCallback(async (itemId: string) => {
+    try {
+      // Firestoreからアイテムを削除
+      await deleteItem(itemId);
+      
+      // UI状態を更新（削除したアイテムを配列からフィルタリング）
+      setItems(prevItems => prevItems.filter(item => item.id !== itemId));
+    } catch (error) {
+      console.error('アイテム削除エラー:', error);
+      alert('アイテムの削除に失敗しました。');
+    }
+  }, []);
+  
   if (loading) {
     return <div>読み込み中...</div>;
   }
@@ -121,25 +128,16 @@ export default function ItemListClient(){
           </div>
 
 
-          {filteredItems.map(item =>(
-          // itemのidをkeyにする
-            <div key={item.id} className="flex bg-white w-full rounded-sm" {...swipeHandlers}>
-              <input 
-                type="checkbox"
-                 checked={item.is_checked === true} 
-                 onChange={() => handleCheckChange(item.id, item.is_checked)}
-                 className="w-5 ml-3 my-auto"
-              />   
-              <div className="p-6 pr-10">
-                <h1 className={`text-xl font-semibold ${
-                  item.is_checked 
-                  ? 'line-through text-gray-400' // チェック済みの場合
-                  : 'text-black'                 // 未チェックの場合
-                }`}>  
-                  {item.name}
-                </h1>
-              </div>
-            </div>
+          {filteredItems.map(item => (
+            <SwipeableItem 
+              key={item.id}
+              id={item.id}
+              name={item.name}
+              isChecked={item.is_checked}
+              onToggleCheck={handleCheckChange}
+              onDelete={handleDeleteItem}
+            />
+
           ))}
         </div>
       </div>    

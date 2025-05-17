@@ -1,4 +1,4 @@
-import { addDoc, collection, doc, getDoc, getDocs, orderBy, query, serverTimestamp, updateDoc, where } from "firebase/firestore";
+import { addDoc, collection, deleteDoc, doc, getDoc, getDocs, orderBy, query, serverTimestamp, updateDoc, where } from "firebase/firestore";
 import { db } from "./firebase";
 import { VALIDATION_RULES } from "./validation";
 
@@ -79,6 +79,15 @@ export async function addItem(shopId: string, itemData: {name: string }) {
     throw error;
   }
 }
+
+// アイテム削除
+
+export async function deleteItem(itemId: string) {
+  const itemRef = doc(db, 'items', itemId);
+  await deleteDoc(itemRef);
+  return true;
+}
+
 
 // アイテムのチェック状態を更新
 export async function updateItemCheckStatus(itemId: string, isChecked: boolean){
