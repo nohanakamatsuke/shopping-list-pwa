@@ -15,11 +15,14 @@ export  async function getAllItemsByShopId(shopId: string) {
 
     const querySnapshot =  await getDocs(q);
     
-    const items: { id: string; [key: string]: any }[] = [];
+    const items: { id: string; name: string; is_checked: boolean }[] = [];
     querySnapshot.forEach((doc) => {
+      const data = doc.data();
+
       items.push({
         id: doc.id,
-        ...doc.data()
+        name: data.name || '不明なアイテム',
+        is_checked: data.is_checked || false,
       });
     });
     
