@@ -2,32 +2,89 @@
 
 import { UserCircleIcon } from "@heroicons/react/24/outline";
 import { useEffect, useState } from "react";
-import { getAllShop } from "../lib/shopService";
+import { getShopByUserId } from "../lib/shopService";
 import Link from "next/link";
+import { useAuth } from "../hooks/useAuth";
 
 export default function ShopListClient(){
-
+  const { user, loading: authLoading, isAuthenticated } = useAuth();
   const [shops, setShops] = useState<{ [key: string]: any }[]>([]);
-  const[loading, setLoading]  = useState(true);
+  const [loading, setLoading]  = useState(true);
+  const [error, setError] = useState<String | null>(null);
 
   useEffect(() => {
-    async function fetchData(){
+    async function fetchUserShops(){
+      // 認証状態の確認が完了するまで待機
+      if (authLoading) return;
+
+      // ログインしていない場合
+      if (!isAuthenticated || !user) {
+        setShops([]);
+        setLoading(false);
+        return;
+      }
+
       try{
-        const data = await getAllShop();
-        console.log("取得したデータ:", data);
+        setError(null);
+
+        const data = await getShopByUserId(user.uid);
+        console.log("取得したユーザーのショップデータ:", data);
         setShops(data);
       }catch(error){
-        console.error("データ取得エラー", error);
-        throw error;
+        console.error("ショップデータ取得エラー", error);
+        setError('ショップデータの取得に失敗しました');
       }finally{
         setLoading(false);  
       }  
     }
-    fetchData();
-  }, []);
 
+    fetchUserShops();
+  }, [user, authLoading, isAuthenticated]);
+
+
+  // 認証状態のローディング中
+  if (authLoading) {
+    return(
+      <div>認証状態を確認中...</div>
+    )
+  }
+
+  // ログインしていない場合
+  if (!isAuthenticated) {
+    return (
+      <div className="flex flex-col items-center space-y-4 w-[85%] md:w-1/2 mx-auto">
+        <div className="bg-white p-6 rounded text-center">
+          <h2 className="text-xl font-semibold text-gray-800 mb-4">
+            ログインが必要です
+          </h2>
+          <p className="text-gray-600 mb-4">
+            買い物リストを表示するにはログインしてください
+          </p>
+          <Link 
+            href="/login"
+            className="inline-block px-6 py-2 bg-custom-red text-white rounded hover:bg-red-600 transition-colors"
+          >
+            ログイン
+          </Link>
+        </div>
+      </div>
+    );
+  }
+
+  // データローディング中
   if (loading) {
-    return <div>読み込み中...</div>;
+    return <div>ショップデータを読み込み中...</div>;
+  }
+
+  // エラー表示
+  if (error) {
+    return (
+      <div className="flex flex-col space-y-4 w-[85%] md:w-1/2 mx-auto">
+        <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded">
+          {error}
+        </div>
+      </div>
+    )
   }
 
   return(
@@ -47,8 +104,9 @@ export default function ShopListClient(){
           </Link>  
         ))
       ) : (
-      <div className="bg-white p-4 rounded text-center">
-        買い物リストは0件です
+      <div className="p-4 rounded text-center">
+        <p className="text-white">まだ買い物リストがありません</p>
+        <p className="text-sm text-white mt-2">新しいお店を追加して買い物リストを作成しましょう</p>
       </div>
       )}
     </div>
