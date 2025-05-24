@@ -11,12 +11,14 @@
   },
   "dependencies": {
     "5": "^0.0.1",
+    "20": "^3.1.9",
     "@heroicons/react": "^2.2.0",
     "firebase": "^11.4.0",
     "next": "^15.2.0",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
     "react-firebase-hooks": "^5.1.1",
+    "react-swipeable": "^7.0.2",
     "styled-jsx": "^5.1.6"
   },
   "devDependencies": {
