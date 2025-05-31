@@ -1,6 +1,6 @@
 'use client';
 
-import { onAuthStateChanged, User } from "firebase/auth";
+import { onAuthStateChanged, signOut, User } from "firebase/auth";
 import { useEffect, useState } from "react";
 import { auth } from "../lib/firebase";
 
@@ -30,6 +30,17 @@ export function useAuth(){
     return () => unsubscribe();
   }, []);
 
+  // ログアウト関数
+  const logout = async () => {
+    try {
+      await signOut(auth);
+      console.log('ログアウトしました');
+    }catch (error) {
+      console.log('ログアウトエラー：', error);
+      throw error;
+    }
+  };
+
   return {
     // ユーザー情報
     user,
@@ -38,6 +49,8 @@ export function useAuth(){
     // ログインしているかどうか(boolean)
     isAuthenticated: !!user,
     // ユーザーID(string | null)
-    userId: user?.uid || null
+    userId: user?.uid || null,
+    // ログアウト関数
+    logout
   };
 }
