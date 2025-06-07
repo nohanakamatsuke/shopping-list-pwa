@@ -20,7 +20,6 @@ export default function AddItemForm(){
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
 
-
   // ショップ情報を取得
    useEffect(() => {
      async function fetchData(){
@@ -72,7 +71,7 @@ export default function AddItemForm(){
   };
 
   return(
-    <div className="w-full max-w-[85%] md:max-w-[50%] mx-auto self-start mt-12">
+    <div className="w-full max-w-lg mx-auto px-6">
     <h1 className="text-2xl font-bold text-white mb-4">
       {shop ? `${shop.name}  アイテム追加` : 'アイテム追加'}
     </h1>

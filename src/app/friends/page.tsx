@@ -8,7 +8,9 @@ import {
   getDocs, 
   doc, 
   updateDoc, 
-  deleteDoc
+  deleteDoc,
+  getDoc,
+  serverTimestamp
 } from 'firebase/firestore';
 import { db } from '../lib/firebase';
 import { useAuth } from '../hooks/useAuth';
@@ -20,19 +22,27 @@ interface FriendRequest {
   requester_email: string;
   requester_id: string;
   receiver_id: string;
+  receiver_name: string;
+  receiver_email: string;
   status: string;
 }
 
+interface Friend {
+  id: string;
+  name: string;
+  email: string;
+}
+
 export default function FriendsPage() {
-  const { userId, isAuthenticated, loading: authLoading } = useAuth();
+  const { userId, isAuthenticated, loading: authLoading, user } = useAuth();
   const [requests, setRequests] = useState<FriendRequest[]>([]);
-  const [friends, setFriends] = useState<FriendRequest[]>([]);
+  const [friends, setFriends] = useState<Friend[]>([]);
   const [loading, setLoading] = useState(true);
 
   // データ取得
   const fetchData = async () => {
     if (!userId) return;
-
+    console.log('userID:',userId);
     try {
       // 自分宛の申請（pending）
       const requestsQuery = query(
@@ -41,31 +51,61 @@ export default function FriendsPage() {
         where('status', '==', 'pending')
       );
 
-      // 自分宛の友達（accepted）
-      const friendsQuery = query(
+      // 自分が receiver の友達（accepted）
+      const friendsAsReceiverQuery = query(
         collection(db, 'friendships'),
         where('receiver_id', '==', userId),
         where('status', '==', 'accepted')
       );
 
-      const [requestsSnapshot, friendsSnapshot] = await Promise.all([
+      // 自分が requester の友達 (accepted)
+      const friendsAsRequesterQuery = query(
+        collection(db,'friendships'),
+        where('requester_id', '==', userId),
+        where('status', '==', 'accepted')
+      )
+
+      const [requestsSnapshot, friendsAsReceiverSnapshot, friendsAsRequesterSnapshot] = await Promise.all([
         getDocs(requestsQuery),
-        getDocs(friendsQuery)
+        getDocs(friendsAsReceiverQuery),
+        getDocs(friendsAsRequesterQuery)
       ]);
       
-      // データ変換
+      // 申請データ変換
       const requestsData = requestsSnapshot.docs.map(doc => ({
         docId: doc.id,
         ...doc.data()
       })) as FriendRequest[];
 
-      const friendsData = friendsSnapshot.docs.map(doc => ({
-        docId: doc.id,
-        ...doc.data()
-      })) as FriendRequest[];
+      // 友達データの統合
+      const friendsData: Friend[] = [];
+
+      // 自分が receiver の場合（requester の情報を友達として追加）
+      friendsAsReceiverSnapshot.docs.forEach(doc => {
+        const data = doc.data();
+        friendsData.push({
+          id: data.requester_id,
+          name: data.requester_name || `ユーザー ${data.requester_id.slice(-4)}`,
+          email: data.requester_email || `${data.requester_id}@unknown.com`,
+        });
+      });
+
+      // 自分が requester の場合（receiver の情報を友達として追加）
+      friendsAsRequesterSnapshot.docs.forEach(doc => {
+        const data = doc.data();
+        friendsData.push({
+          id: data.receiver_id,
+          name: data.receiver_name || `ユーザー ${data.receiver_id.slice(-4)}`,
+          email: data.receiver_email || `${data.receiver_id}@unknown.com`,
+        });
+      });
+      // 重複除去（念のため）
+      const uniqueFriends = friendsData.filter((friend, index, self) => 
+        self.findIndex(f => f.id === friend.id) === index
+      );
 
       setRequests(requestsData);
-      setFriends(friendsData);
+      setFriends(uniqueFriends);
 
       
       console.log('取得完了:', { requests: requestsData.length, friends: friendsData.length });
@@ -84,7 +124,10 @@ export default function FriendsPage() {
   const accept = async (docId: string) => {
     try {
       await updateDoc(doc(db, 'friendships', docId), {
-        status: 'accepted'
+        status: 'accepted',
+        receiver_name: user?.displayName || null,
+        receiver_email: user?.email || '',
+        updated_at: serverTimestamp()
       });
       fetchData(); // 再読み込み
     } catch (error) {
@@ -132,14 +175,12 @@ export default function FriendsPage() {
     <div className="w-full max-w-lg mx-auto px-6">
       <h1 className="text-2xl font-bold text-white mb-6">友達</h1>
 
-      {/* 申請リスト */}
-      <div className="bg-white rounded-md shadow-md mb-6 p-4">
-        <h2 className="text-lg font-bold mb-4 text-black">申請 ({requests.length})</h2>
-        
-        {requests.length === 0 ? (
-          <p className="text-gray-500">申請はありません</p>
-        ) : (
-          requests.map((req) => (
+        {/* 申請リスト - 申請がある場合のみ表示 */}
+        {requests.length > 0 && (
+        <div className="bg-white rounded-md shadow-md mb-6 p-4">
+          <h2 className="text-lg font-bold mb-4 text-black">申請 ({requests.length})</h2>
+          
+          {requests.map((req) => (
             <div key={req.docId} className="flex justify-between items-center p-3 border rounded mb-2">
               <div>
                 <p className="font-semibold text-black">{req.requester_name}</p>
@@ -160,9 +201,9 @@ export default function FriendsPage() {
                 </button>
               </div>
             </div>
-          ))
+          ))}
+         </div>
         )}
-      </div>
 
       {/* 友達リスト */}
       <div className="bg-white rounded-md shadow-md p-4">
@@ -172,10 +213,10 @@ export default function FriendsPage() {
           <p className="text-gray-500">友達がいません</p>
         ) : (
           friends.map((friend) => (
-            <div key={friend.docId} className="flex justify-between items-center p-3 border rounded mb-2">
+            <div key={friend.id} className="flex justify-between items-center p-3 border rounded mb-2">
               <div>
-                <p className="font-semibold text-black">{friend.requester_name}</p>
-                <p className="text-sm text-gray-600">{friend.requester_email}</p>
+                <p className="font-semibold text-black">{friend.name}</p>
+                <p className="text-sm text-gray-600">{friend.email}</p>
               </div>
               <div className="text-green-600 font-bold">友達</div>
             </div>
@@ -188,7 +229,7 @@ export default function FriendsPage() {
         <Link href="/" className="px-4 py-2 bg-gray-200 text-gray-700 rounded">
           ホームに戻る
         </Link>
-        <Link href="/add-friend" className="px-7 py-2 bg-blue-500 text-white rounded">
+        <Link href="/add-friends" className="px-7 py-2 bg-blue-500 text-white rounded">
           友達追加
         </Link>
       </div>
