@@ -3,8 +3,9 @@
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import React, { useState } from 'react';
-import { auth } from '../lib/firebase';
+import { auth, db } from '../lib/firebase';
 import { signInWithEmailAndPassword } from 'firebase/auth';
+import { doc, getDoc, serverTimestamp, setDoc } from 'firebase/firestore';
 
 const LoginPage: React.FC = () => {
   const router = useRouter();
@@ -22,6 +23,24 @@ const LoginPage: React.FC = () => {
 
       // メールアドレスとパスワードでサインイン
       const userCredential = await signInWithEmailAndPassword(auth, email, password);
+
+      // usersコレクションにデータがあるかどうかチェック
+      const userDocRef = doc(db,'users', userCredential.user.uid);
+      const userDoc = await getDoc(userDocRef);
+
+      // usersコレクションにデータがない場合は追加
+      if(!userDoc.exists()) {
+        console.log('usersコレクションにデータが無いため追加します');
+        await setDoc(userDocRef, {
+          uid: userCredential.user.uid,
+          email: userCredential.user.email || 'unknown@example.com',
+          displayName: userCredential.user.displayName || userCredential.user.email || '未設定',
+          created_at: serverTimestamp(),
+          updated_at: serverTimestamp()
+        })
+        console.log('usersコレクションにデータ追加完了!');
+      }
+
       console.log('ログイン成功：', userCredential.user);
       alert('ログインしました！');
       // ホーム画面に遷移

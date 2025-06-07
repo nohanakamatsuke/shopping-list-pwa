@@ -1,8 +1,9 @@
 'use client';
-import React, { useState } from 'react';
+import React, { use, useState } from 'react';
 import { createUserWithEmailAndPassword, updateProfile } from "firebase/auth";
-import { auth } from '../lib/firebase';
+import { auth, db } from '../lib/firebase';
 import { useRouter } from 'next/navigation';
+import { doc, serverTimestamp, setDoc } from 'firebase/firestore';
 
 const SignUpPage: React.FC = () => {
   const router = useRouter();
@@ -30,6 +31,16 @@ const SignUpPage: React.FC = () => {
         });
         console.log('displayName設定完了：', displayName);
       }
+
+      // userコレクションにもユーザー情報を登録
+      await setDoc(doc(db,'users',userCredential.user.uid), {
+        uid: userCredential.user.uid,
+        email: email,
+        displayName: displayName.trim() || email,
+        created_at: serverTimestamp(),
+        updated_at: serverTimestamp()
+      })
+      console.log('userコレクションに保存完了!');
 
       alert('アカウントを作成しました！');
       // ホーム画面に遷移
@@ -84,8 +95,8 @@ const SignUpPage: React.FC = () => {
 						<label htmlFor="displayName" className='block text-lg'>表示名</label>
 						<input 
               type="text" 
-              id="dispalyName" 
-              name="dispalyName" 
+              id="displayName" 
+              name="displayName" 
               value={displayName}
               required 
               onChange={(e) => setDisplayName(e.target.value)}
