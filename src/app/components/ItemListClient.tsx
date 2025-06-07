@@ -7,8 +7,12 @@ import { getShopById } from "../lib/shopService";
 import { PlusIcon } from "@heroicons/react/16/solid";
 import { useRouter } from "next/navigation";
 import SwipeableItem from "./SwipeableItem";
+import ShareModal from "./ShareModal";
+import { useAuth } from "../hooks/useAuth";
 
 export default function ItemListClient(){
+
+  const { user } = useAuth();
 
   // URLからshopIdを取得
   const params = useParams();
@@ -19,6 +23,7 @@ export default function ItemListClient(){
   const [items, setItems] = useState<{ id: string; name: string; is_checked: boolean }[]>([]);
   const [hideCompleted, setHideCompleted] = useState(false);
   const[loading, setLoading]  = useState(true);
+  const[showShareModal, setShowShareModal] = useState(false);
 
   useEffect(() => {
     async function fetchData(){
@@ -81,6 +86,10 @@ export default function ItemListClient(){
   ? items.filter(item => !item.is_checked) 
   : items;
 
+  // 所有者判定
+  const isOwner = shop && user && shop.owner_id == user.uid;
+
+
   // アイテム削除処理
   const handleDeleteItem = useCallback(async (itemId: string) => {
     try {
@@ -100,6 +109,7 @@ export default function ItemListClient(){
   }
 
   return(
+    
     <>
       <div className="w-full max-w-[85%] md:max-w-[50%] mx-auto self-start mt-12">
         
@@ -107,11 +117,36 @@ export default function ItemListClient(){
           {shop &&(
             <div className="flex justify-between items-center">
               <h1 className="text-custom-red text-3xl font-bold">{shop.name}</h1>
-              <button
-                onClick={handleAddItem}
-                aria-label="アイテムを追加">
-                <PlusIcon className="h-7 w-7 text-custom-red bg-gray-600 bg-opacity-25 rounded hover:text-white hover:bg-custom-blue "/>
-              </button>
+              <div className="space-x-4 flex items-center">
+                {isOwner && (
+                  <button
+                    onClick={() => setShowShareModal(true)}
+                    aria-label="リストを共有"
+                    className="h-7 px-4 bg-green-700 rounded">
+                      共有
+                  </button>
+                )}
+
+                {/* 友達共有モーダル */}
+                {isOwner && (
+                  <ShareModal
+                    isOpen={showShareModal}
+                    onClose={() => setShowShareModal(false)}
+                    shopId={shopId as string}
+                    shopName={shop.name} 
+                    currentSharedWith={Array.isArray(shop.sharedWith) ? shop.sharedWith : []} 
+                    onUpdate={async () => {
+                      const updatedShop = await getShopById(shopId as string);
+                      setShop(updatedShop);
+                      console.log('更新後のshop:', updatedShop);
+                  }}/>
+                )}
+                <button
+                  onClick={handleAddItem}
+                  aria-label="アイテムを追加">
+                    <PlusIcon className="h-7 w-7 text-custom-red bg-gray-600 bg-opacity-25 rounded hover:text-white hover:bg-custom-blue"/>
+                </button>
+              </div>
             </div>
           )}
           

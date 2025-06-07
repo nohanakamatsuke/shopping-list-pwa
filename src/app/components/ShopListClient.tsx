@@ -2,7 +2,7 @@
 
 import { UserCircleIcon } from "@heroicons/react/24/outline";
 import { useEffect, useState } from "react";
-import { getShopByUserId } from "../lib/shopService";
+import { getAllAccessibleShops } from "../lib/shopService";
 import Link from "next/link";
 import { useAuth } from "../hooks/useAuth";
 
@@ -27,7 +27,7 @@ export default function ShopListClient(){
       try{
         setError(null);
 
-        const data = await getShopByUserId(user.uid);
+        const data = await getAllAccessibleShops(user.uid);
         console.log("取得したユーザーのショップデータ:", data);
         setShops(data);
       }catch(error){
