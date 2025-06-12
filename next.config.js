@@ -20,5 +20,9 @@ const withPWA = require('next-pwa')({
 
 module.exports = withPWA({
   reactStrictMode: true,
-  // swcMinify は削除（Next.js の新しいバージョンではデフォルトで有効）
+  output: 'export', // 静的エクスポート用
+  trailingSlash: true, // Firebase Hosting用
+  images: {
+    unoptimized: true, // 静的エクスポート用
+  },
 });
