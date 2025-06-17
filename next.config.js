@@ -19,10 +19,5 @@ const withPWA = require('next-pwa')({
 });
 
 module.exports = withPWA({
-  reactStrictMode: true,
-  output: 'export', // 静的エクスポート用
-  trailingSlash: true, // Firebase Hosting用
-  images: {
-    unoptimized: true, // 静的エクスポート用
-  },
+  reactStrictMode: true
 });
