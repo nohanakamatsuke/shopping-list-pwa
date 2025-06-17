@@ -6,11 +6,12 @@ import { addItem } from "../lib/itemListService";
 import { useParams } from "next/navigation";
 import { getShopById } from "../lib/shopService";
 
-export default function AddItemForm(){
+interface AddItemFormProps {
+  shopId: string;
+}
 
-  // URLからshopIdを取得
-  const params = useParams();
-  const shopId = params.shopId; 
+export default function AddItemForm({ shopId }: AddItemFormProps){
+
   const router = useRouter();
 
   // 状態管理

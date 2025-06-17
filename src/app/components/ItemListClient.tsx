@@ -10,13 +10,13 @@ import SwipeableItem from "./SwipeableItem";
 import ShareModal from "./ShareModal";
 import { useAuth } from "../hooks/useAuth";
 
-export default function ItemListClient(){
+interface ItemListClientProps {
+  shopId: string;
+}
+
+export default function ItemListClient({ shopId }: ItemListClientProps){
 
   const { user } = useAuth();
-
-  // URLからshopIdを取得
-  const params = useParams();
-  const shopId = params.shopId;
 
   // 状態管理
   const [shop, setShop] = useState<{ [key: string]: string; id: string } | null>(null);

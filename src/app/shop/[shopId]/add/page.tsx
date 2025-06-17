@@ -2,7 +2,11 @@
 
 import AddItemClient from "@/app/components/AddItemForm";
 
-export default async function AddItemPage (){
-  
-  return <AddItemClient />
+interface PageProps {
+  params: Promise<{ shopId: string }>;
+}
+
+export default async function AddItemPage ({ params }: PageProps){
+  const { shopId } = await params;
+  return <AddItemClient shopId={shopId} />
 }
