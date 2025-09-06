@@ -2,7 +2,6 @@
 
 import { useCallback, useEffect, useState } from "react";
 import { deleteItem, getAllItemsByShopId, updateItemCheckStatus } from "../lib/itemListService";
-import { useParams } from "next/navigation";
 import { getShopById } from "../lib/shopService";
 import { PlusIcon } from "@heroicons/react/16/solid";
 import { useRouter } from "next/navigation";
