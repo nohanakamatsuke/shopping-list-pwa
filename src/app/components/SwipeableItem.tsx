@@ -85,8 +85,8 @@ export default function SwipeableItem({ id, name, isChecked, onToggleCheck, onDe
           className="w-5 ml-3 my-auto"
           aria-label={`${name}のステータスを切り替え`}
         />
-        <div className="p-6 pr-10 w-full">
-          <h1 className={`text-xl font-semibold ${isChecked ? 'line-through text-gray-400' : 'text-black'}`}>
+        <div className="p-3 pr-10 w-full">
+          <h1 className={`text-lg font-semibold ${isChecked ? 'line-through text-gray-400' : 'text-black'}`}>
             {name}
           </h1>
         </div>
