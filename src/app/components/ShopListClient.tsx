@@ -45,14 +45,14 @@ export default function ShopListClient(){
   // 認証状態のローディング中
   if (authLoading) {
     return(
-      <div className="mt-24">認証状態を確認中...</div>
+      <div>認証状態を確認中...</div>
     )
   }
 
   // ログインしていない場合
   if (!isAuthenticated) {
     return (
-      <div className="flex flex-col items-center space-y-4 w-[85%] md:w-1/2 mx-auto mt-24">
+      <div className="flex flex-col items-center space-y-4 w-[85%] md:w-1/2 mx-auto">
         <div className="bg-white p-6 rounded text-center">
           <h2 className="text-xl font-semibold text-gray-800 mb-4">
             ログインが必要です
@@ -73,7 +73,7 @@ export default function ShopListClient(){
 
   // データローディング中
   if (loading) {
-    return <div className="mt-24">ショップデータを読み込み中...</div>;
+    return <div>ショップデータを読み込み中...</div>;
   }
 
   // エラー表示
@@ -88,7 +88,7 @@ export default function ShopListClient(){
   }
 
   return(
-    <div className="flex flex-col space-y-3 w-[85%] md:w-1/2 mx-auto mt-13">
+    <div className="flex flex-col space-y-3 w-[85%] md:w-1/2 mx-auto">
       {shops.length > 0 ? (
         shops.map(shop =>(
           <Link key={shop.id} href={`/shop/${shop.id}`} className="flex bg-white w-full rounded">

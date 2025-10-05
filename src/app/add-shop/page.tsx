@@ -43,7 +43,7 @@ export default function AddShopPage() {
   };
 
   return (
-    <div className="w-full max-w-lg mx-auto px-6 mt-24">
+    <div className="w-full max-w-lg mx-auto px-6">
       <h1 className="text-2xl font-bold text-white mb-6">新しいお店を追加</h1>
       
       {error && (

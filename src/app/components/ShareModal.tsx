@@ -160,7 +160,7 @@ export default function ShareModal({
         <div className="p-4 max-h-64 overflow-y-auto">
           {loading ? (
             // 読み込み中の表示
-            <div className="text-center py-4 mt-24">読み込み中...</div>
+            <div className="text-center py-4">読み込み中...</div>
           ) : friends.length === 0 ? (
             // 友達がいない場合の表示
             <div className="text-center py-4 text-gray-500">友達がいません</div>

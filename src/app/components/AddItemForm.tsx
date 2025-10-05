@@ -72,7 +72,7 @@ export default function AddItemForm({ shopId }: AddItemFormProps){
   };
 
   return(
-    <div className="w-full max-w-lg mx-auto px-6 mt-24">
+    <div className="w-full max-w-lg mx-auto px-6">
     <h1 className="text-2xl font-bold text-white mb-4">
       {shop ? `${shop.name}  アイテム追加` : 'アイテム追加'}
     </h1>

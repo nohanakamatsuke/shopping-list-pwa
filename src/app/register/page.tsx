@@ -65,7 +65,7 @@ const SignUpPage: React.FC = () => {
   };
 
 	return (
-			<div className='w-full max-w-lg px-6 mt-24'>
+			<div className='w-full max-w-lg px-6'>
 				<form 
           onSubmit={handleSubmit}
           className='space-y-5'>
