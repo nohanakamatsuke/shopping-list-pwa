@@ -85,14 +85,18 @@ export default function ItemListClient({ shopId }: ItemListClientProps){
   // 所有者判定
   const isOwner = shop && user && shop.owner_id == user.uid;
 
-  // Enterキーで保存して次の入力へ
-  const handleKeyPress = async (e: React.KeyboardEvent) => {
+  const handleKeyPress = async (e: { key: string; preventDefault: () => void }) => {
     if (e.key === 'Enter') {
       e.preventDefault();
-      isEnterKeyRef.current = true; // フラグを立てる
+      isEnterKeyRef.current = true;
       
       if(!newItemText.trim() || isSaving) {
         isEnterKeyRef.current = false;
+        // フォーカスを維持
+        setTimeout(() => {
+          inputRef.current?.focus();
+          isEnterKeyRef.current = false;
+        }, 100);
         return;
       }
       
@@ -106,11 +110,11 @@ export default function ItemListClient({ shopId }: ItemListClientProps){
         setItems(prevItems => [...prevItems, savedItem]);
         setNewItemText("");
         
-        // キーボードを開いたまま
-        requestAnimationFrame(() => {
+        // 確実にフォーカス維持
+        setTimeout(() => {
           inputRef.current?.focus();
-          isEnterKeyRef.current = false; // フラグを下ろす
-        });
+          isEnterKeyRef.current = false;
+        }, 100);
         
       } catch(error) {
         console.error('アイテム追加エラー:', error);
@@ -119,9 +123,6 @@ export default function ItemListClient({ shopId }: ItemListClientProps){
       } finally {
         setIsSaving(false);
       }
-    } else if (e.key === 'Escape') {
-      setNewItemText("");
-      inputRef.current?.blur();
     }
   };
 
@@ -226,20 +227,25 @@ export default function ItemListClient({ shopId }: ItemListClientProps){
             />
           ))}
 
-          {/* 入力ボックス */}
-          <div className="flex bg-white w-full rounded p-3">
+          {/* 入力ボックス - formで囲む */}
+          <form 
+            onSubmit={(e) => {
+              e.preventDefault();
+              handleKeyPress({ key: 'Enter', preventDefault: () => {} } as React.KeyboardEvent);
+            }}
+            className="flex bg-white w-full rounded p-3"
+          >
             <input
               ref={inputRef}
               type="text"
               value={newItemText}
               onChange={(e) => setNewItemText(e.target.value)}
-              onKeyDown={handleKeyPress}
               onBlur={handleSaveNewItem}
               placeholder="アイテム名を入力..."
               className="flex-1 outline-none text-black"
               disabled={isSaving}
             />
-          </div>
+          </form>
 
           {/* スペーサー - ボタンの高さ分確保 */}
           <div className="h-24"></div>
