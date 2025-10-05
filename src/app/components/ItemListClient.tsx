@@ -250,7 +250,10 @@ export default function ItemListClient({ shopId }: ItemListClientProps){
                 color: #9CA3AF;
                 pointer-events: none;
               }
-            `}</style>              
+            `}</style>  
+
+            {/* スペーサー */}
+            <div className="h-28"></div>            
           </div>
 
         </div>
