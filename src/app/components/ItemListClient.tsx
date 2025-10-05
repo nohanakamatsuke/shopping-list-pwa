@@ -24,6 +24,8 @@ export default function ItemListClient({ shopId }: ItemListClientProps){
   const [newItemText, setNewItemText] = useState("");
   const [isSaving, setIsSaving] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
+  const isEnterKeyRef = useRef(false);
+
 
   // データ取得
   useEffect(() => {
@@ -83,15 +85,49 @@ export default function ItemListClient({ shopId }: ItemListClientProps){
   // 所有者判定
   const isOwner = shop && user && shop.owner_id == user.uid;
 
-// Enterキーで保存して次の入力へ
-const handleKeyPress = async (e: React.KeyboardEvent) => {
-  if (e.key === 'Enter') {
-    e.preventDefault();
-    
-    if(!newItemText.trim() || isSaving) {
-      // 空の場合は保存せず、フォーカスだけ維持
-      return;
+  // Enterキーで保存して次の入力へ
+  const handleKeyPress = async (e: React.KeyboardEvent) => {
+    if (e.key === 'Enter') {
+      e.preventDefault();
+      isEnterKeyRef.current = true; // フラグを立てる
+      
+      if(!newItemText.trim() || isSaving) {
+        isEnterKeyRef.current = false;
+        return;
+      }
+      
+      try {
+        setIsSaving(true);
+        
+        const savedItem = await addItem(shopId as string, {
+          name: newItemText.trim()
+        }) as {id: string; name: string; is_checked: boolean;};
+        
+        setItems(prevItems => [...prevItems, savedItem]);
+        setNewItemText("");
+        
+        // キーボードを開いたまま
+        requestAnimationFrame(() => {
+          inputRef.current?.focus();
+          isEnterKeyRef.current = false; // フラグを下ろす
+        });
+        
+      } catch(error) {
+        console.error('アイテム追加エラー:', error);
+        alert('アイテムの追加に失敗しました。');
+        isEnterKeyRef.current = false;
+      } finally {
+        setIsSaving(false);
+      }
+    } else if (e.key === 'Escape') {
+      setNewItemText("");
+      inputRef.current?.blur();
     }
+  };
+
+  // Done押下時のみ保存（Enter時は実行しない）
+  const handleSaveNewItem = async () => {
+    if(!newItemText.trim() || isSaving || isEnterKeyRef.current) return; // フラグで防ぐ
     
     try {
       setIsSaving(true);
@@ -101,12 +137,7 @@ const handleKeyPress = async (e: React.KeyboardEvent) => {
       }) as {id: string; name: string; is_checked: boolean;};
       
       setItems(prevItems => [...prevItems, savedItem]);
-      setNewItemText(""); // 次の入力のためにクリア
-      
-      // キーボードを開いたまま次の入力へ
-      setTimeout(() => {
-        inputRef.current?.focus();
-      }, 50);
+      setNewItemText("");
       
     } catch(error) {
       console.error('アイテム追加エラー:', error);
@@ -114,33 +145,7 @@ const handleKeyPress = async (e: React.KeyboardEvent) => {
     } finally {
       setIsSaving(false);
     }
-  } else if (e.key === 'Escape') {
-    setNewItemText("");
-    inputRef.current?.blur();
-  }
-};
-
-// Done押下時に保存
-const handleSaveNewItem = async () => {
-  if(!newItemText.trim() || isSaving) return;
-  
-  try {
-    setIsSaving(true);
-    
-    const savedItem = await addItem(shopId as string, {
-      name: newItemText.trim()
-    }) as {id: string; name: string; is_checked: boolean;};
-    
-    setItems(prevItems => [...prevItems, savedItem]);
-    setNewItemText("");
-    
-  } catch(error) {
-    console.error('アイテム追加エラー:', error);
-    alert('アイテムの追加に失敗しました。');
-  } finally {
-    setIsSaving(false);
-  }
-};
+  };
 
   // アイテム削除処理
   const handleDeleteItem = useCallback(async (itemId: string) => {
