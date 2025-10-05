@@ -86,39 +86,60 @@ export default function ItemListClient({ shopId }: ItemListClientProps){
   // 所有者判定
   const isOwner = shop && user && shop.owner_id == user.uid;
 
-
   // 新規アイテム保存処理
+  // Done押下時のみ保存（フォーカスアウト）
   const handleSaveNewItem = async () => {
     if(!newItemText.trim() || isSaving) return;
     
-    try{
+    try {
       setIsSaving(true);
-
-      // addItem関数を呼び出し（shopIdとitemDataを別々に渡す）
+      
       const savedItem = await addItem(shopId as string, {
         name: newItemText.trim()
       }) as {id: string; name: string; is_checked: boolean;};
-
-      // ローカル状態を更新
+      
       setItems(prevItems => [...prevItems, savedItem]);
-
-      // 入力フィールドをリセット
       setNewItemText("");
-
-    }catch(error){
+      
+    } catch(error) {
       console.error('アイテム追加エラー:', error);
       alert('アイテムの追加に失敗しました。');
-    }finally{
+    } finally {
       setIsSaving(false);
     }
   };
 
-  // Enterキーで保存、Escapeでキャンセル
-  const handleKeyPress = (e: React.KeyboardEvent) => {
+  // Enterキーで保存して連続入力、Escapeでキャンセル
+  const handleKeyPress = async (e: React.KeyboardEvent) => {
     if (e.key === 'Enter') {
-      handleSaveNewItem();
+      e.preventDefault(); // デフォルトの改行を防ぐ
+      
+      if(!newItemText.trim() || isSaving) return;
+      
+      try {
+        setIsSaving(true);
+        
+        const savedItem = await addItem(shopId as string, {
+          name: newItemText.trim()
+        }) as {id: string; name: string; is_checked: boolean;};
+        
+        setItems(prevItems => [...prevItems, savedItem]);
+        setNewItemText("");
+        
+        // フォーカスを維持（キーボードを閉じない）
+        setTimeout(() => {
+          inputRef.current?.focus();
+        }, 0);
+        
+      } catch(error) {
+        console.error('アイテム追加エラー:', error);
+        alert('アイテムの追加に失敗しました。');
+      } finally {
+        setIsSaving(false);
+      }
     } else if (e.key === 'Escape') {
       setNewItemText("");
+      inputRef.current?.blur(); // キーボードを閉じる
     }
   };
 
