@@ -3,8 +3,6 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { addItem, deleteItem, getAllItemsByShopId, updateItemCheckStatus } from "../lib/itemListService";
 import { getShopById } from "../lib/shopService";
-import { PlusIcon } from "@heroicons/react/16/solid";
-import { useRouter } from "next/navigation";
 import SwipeableItem from "./SwipeableItem";
 import ShareModal from "./ShareModal";
 import { useAuth } from "../hooks/useAuth";
@@ -26,9 +24,6 @@ export default function ItemListClient({ shopId }: ItemListClientProps){
   const [newItemText, setNewItemText] = useState("");
   const [isSaving, setIsSaving] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
-  const [isSavingViaEnter, setIsSavingViaEnter] = useState(false);
-
-
 
   // データ取得
   useEffect(() => {
@@ -88,64 +83,39 @@ export default function ItemListClient({ shopId }: ItemListClientProps){
   // 所有者判定
   const isOwner = shop && user && shop.owner_id == user.uid;
 
-  // Enterキーで保存して連続入力
-const handleKeyPress = async (e: React.KeyboardEvent) => {
-  if (e.key === 'Enter') {
-    e.preventDefault();
-    
-    if(!newItemText.trim() || isSaving) return;
-    
-    try {
-      setIsSaving(true);
-      setIsSavingViaEnter(true); // フラグを立てる
+  const handleKeyPress = async (e: React.KeyboardEvent) => {
+    if (e.key === 'Enter') {
+      e.preventDefault();
+      e.stopPropagation(); // イベント伝播を停止
       
-      const savedItem = await addItem(shopId as string, {
-        name: newItemText.trim()
-      }) as {id: string; name: string; is_checked: boolean;};
+      if(!newItemText.trim() || isSaving) return;
       
-      setItems(prevItems => [...prevItems, savedItem]);
+      try {
+        setIsSaving(true);
+        
+        const savedItem = await addItem(shopId as string, {
+          name: newItemText.trim()
+        }) as {id: string; name: string; is_checked: boolean;};
+        
+        setItems(prevItems => [...prevItems, savedItem]);
+        setNewItemText("");
+        
+        // モバイルでも確実にフォーカスを維持
+        requestAnimationFrame(() => {
+          inputRef.current?.focus();
+        });
+        
+      } catch(error) {
+        console.error('アイテム追加エラー:', error);
+        alert('アイテムの追加に失敗しました。');
+      } finally {
+        setIsSaving(false);
+      }
+    } else if (e.key === 'Escape') {
       setNewItemText("");
-      
-      // フォーカスを維持
-      setTimeout(() => {
-        inputRef.current?.focus();
-        setIsSavingViaEnter(false); // フラグを下ろす
-      }, 100); // 少し遅延を増やす
-      
-    } catch(error) {
-      console.error('アイテム追加エラー:', error);
-      alert('アイテムの追加に失敗しました。');
-      setIsSavingViaEnter(false);
-    } finally {
-      setIsSaving(false);
+      inputRef.current?.blur();
     }
-  } else if (e.key === 'Escape') {
-    setNewItemText("");
-    inputRef.current?.blur();
-  }
-};
-
-// Done押下時のみ保存（Enterキーでの保存時は実行しない）
-const handleSaveNewItem = async () => {
-  if(!newItemText.trim() || isSaving || isSavingViaEnter) return; // フラグで防ぐ
-  
-  try {
-    setIsSaving(true);
-    
-    const savedItem = await addItem(shopId as string, {
-      name: newItemText.trim()
-    }) as {id: string; name: string; is_checked: boolean;};
-    
-    setItems(prevItems => [...prevItems, savedItem]);
-    setNewItemText("");
-    
-  } catch(error) {
-    console.error('アイテム追加エラー:', error);
-    alert('アイテムの追加に失敗しました。');
-  } finally {
-    setIsSaving(false);
-  }
-};
+  };
 
   // アイテム削除処理
   const handleDeleteItem = useCallback(async (itemId: string) => {
@@ -226,7 +196,7 @@ const handleSaveNewItem = async () => {
             />
           ))}
 
-          {/* 新規アイテム入力ボックス - リスト内に配置 */}
+          {/* 新規アイテム入力ボックス */}
           <div className="flex bg-white w-full rounded p-3">
             <input
               ref={inputRef}
@@ -234,7 +204,6 @@ const handleSaveNewItem = async () => {
               value={newItemText}
               onChange={(e) => setNewItemText(e.target.value)}
               onKeyDown={handleKeyPress}
-              onBlur={handleSaveNewItem}
               placeholder="アイテム名を入力..."
               className="flex-1 outline-none text-black"
               disabled={isSaving}
