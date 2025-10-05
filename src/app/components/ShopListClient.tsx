@@ -45,14 +45,14 @@ export default function ShopListClient(){
   // 認証状態のローディング中
   if (authLoading) {
     return(
-      <div>認証状態を確認中...</div>
+      <div className="mt-24">認証状態を確認中...</div>
     )
   }
 
   // ログインしていない場合
   if (!isAuthenticated) {
     return (
-      <div className="flex flex-col items-center space-y-4 w-[85%] md:w-1/2 mx-auto">
+      <div className="flex flex-col items-center space-y-4 w-[85%] md:w-1/2 mx-auto mt-24">
         <div className="bg-white p-6 rounded text-center">
           <h2 className="text-xl font-semibold text-gray-800 mb-4">
             ログインが必要です
@@ -73,7 +73,7 @@ export default function ShopListClient(){
 
   // データローディング中
   if (loading) {
-    return <div>ショップデータを読み込み中...</div>;
+    return <div className="mt-24">ショップデータを読み込み中...</div>;
   }
 
   // エラー表示
@@ -88,13 +88,13 @@ export default function ShopListClient(){
   }
 
   return(
-    <div className="flex flex-col space-y-4 w-[85%] md:w-1/2 mx-auto">
+    <div className="flex flex-col space-y-4 w-[85%] md:w-1/2 mx-auto mt-13">
       {shops.length > 0 ? (
         shops.map(shop =>(
           <Link key={shop.id} href={`/shop/${shop.id}`} className="flex bg-white w-full rounded">
             <div className="w-4 bg-custom-red-light"></div>
-            <div className="p-3 ">
-              <div className="text-black text-lg font-semibold">{shop.name}</div>
+            <div className="p-2">
+              <div className="text-black text-sm font-semibold">{shop.name}</div>
               <div className="flex space-x-2">
                 {/* お店のカテゴリーに、更新日時の記載は必要ないか */}
                 <div></div>

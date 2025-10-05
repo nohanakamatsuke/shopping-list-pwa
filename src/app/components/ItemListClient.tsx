@@ -115,16 +115,24 @@ export default function ItemListClient({ shopId }: ItemListClientProps){
         <div className="flex flex-col space-y-4">
           {shop &&(
             <div className="flex justify-between items-center">
-              <h1 className="text-custom-red text-3xl font-bold">{shop.name}</h1>
+              <h1 className="text-custom-red text-2xl font-bold">{shop.name}</h1>
+              
               <div className="space-x-4 flex items-center">
                 {isOwner && (
                   <button
                     onClick={() => setShowShareModal(true)}
                     aria-label="リストを共有"
-                    className="h-7 px-4 bg-green-700 rounded">
+                    className="h-7 px-3 bg-green-700 rounded">
                       共有
                   </button>
                 )}
+
+                <button
+                  onClick={handleAddItem}
+                  aria-label="アイテムを追加"
+                  className="mr-12">
+                    <PlusIcon className="h-8 w-8 text-custom-red rounded"/>
+                </button>
 
                 {/* 友達共有モーダル */}
                 {isOwner && (
@@ -140,17 +148,12 @@ export default function ItemListClient({ shopId }: ItemListClientProps){
                       console.log('更新後のshop:', updatedShop);
                   }}/>
                 )}
-                <button
-                  onClick={handleAddItem}
-                  aria-label="アイテムを追加">
-                    <PlusIcon className="h-7 w-7 text-custom-red bg-gray-600 bg-opacity-25 rounded hover:text-white hover:bg-custom-blue"/>
-                </button>
               </div>
             </div>
           )}
           
-          <div className="flex items-center bg-white bg-opacity-20 p-2 rounded">
-            <label className="flex items-center text-black cursor-pointer">
+          <div className="flex items-center  bg-opacity-20 p-1 rounded text-xs">
+            <label className="flex items-center text-white cursor-pointer">
               <input
                 type="checkbox"
                 checked={hideCompleted}
