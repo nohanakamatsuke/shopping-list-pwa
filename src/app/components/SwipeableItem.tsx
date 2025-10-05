@@ -78,18 +78,16 @@ export default function SwipeableItem({ id, name, isChecked, onToggleCheck, onDe
           transform: `translateX(-${translateX}px)`,
         }}
       >
-        <input 
-          type="checkbox"
-          checked={isChecked}
-          onChange={() => onToggleCheck(id, isChecked)}
-          className="h-4 w-4 ml-3 my-auto rounded-full"
-          aria-label={`${name}のステータスを切り替え`}
-        />
-        <div className="p-2 pr-10 w-full">
-          <h1 className={`text-sm font-semibold ${isChecked ? 'line-through text-gray-400' : 'text-black'}`}>
-            {name}
-          </h1>
-        </div>
+
+        <label className="flex items-center w-full cursor-pointer p-3 bg-white rounded text-black">
+          <input 
+            type="checkbox" 
+            checked={isChecked}
+            onChange={() => onToggleCheck(id, isChecked)}
+            className="mr-3"
+          />
+          <span className="flex-1">{name}</span>
+        </label>
       </div>
     </div>
   );

@@ -23,7 +23,6 @@ export default function ItemListClient({ shopId }: ItemListClientProps){
   const [hideCompleted, setHideCompleted] = useState(false);
   const [loading, setLoading]  = useState(true);
   const [showShareModal, setShowShareModal] = useState(false);
-  const [showNewItemInput, setShowNewItemInput] = useState(false);
   const [newItemText, setNewItemText] = useState("");
   const [isSaving, setIsSaving] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
@@ -57,14 +56,6 @@ export default function ItemListClient({ shopId }: ItemListClientProps){
     }
     fetchData();
   }, [shopId]);
-
-  // 新規入力エリアを表示したら自動フォーカス
-  useEffect(() => {
-    if (showNewItemInput && inputRef.current) {
-      inputRef.current.focus();
-    }
-  }, [showNewItemInput]);
-
 
   // チェックボックスの状態変更処理
   const handleCheckChange = async (itemId: string, currentStatus: boolean) => {
@@ -113,7 +104,6 @@ export default function ItemListClient({ shopId }: ItemListClientProps){
 
       // 入力フィールドをリセット
       setNewItemText("");
-      setShowNewItemInput(false);
 
     }catch(error){
       console.error('アイテム追加エラー:', error);
@@ -128,7 +118,6 @@ export default function ItemListClient({ shopId }: ItemListClientProps){
     if (e.key === 'Enter') {
       handleSaveNewItem();
     } else if (e.key === 'Escape') {
-      setShowNewItemInput(false);
       setNewItemText("");
     }
   };
@@ -212,40 +201,25 @@ export default function ItemListClient({ shopId }: ItemListClientProps){
               onDelete={handleDeleteItem}
             />
           ))}
-          
+
           {/* 新規アイテム入力ボックス - リスト内に配置 */}
-          {showNewItemInput && (
-            <div className="flex bg-white w-full rounded p-3">
-              <input
-                ref={inputRef}
-                type="text"
-                value={newItemText}
-                onChange={(e) => setNewItemText(e.target.value)}
-                onKeyDown={handleKeyPress}
-                onBlur={handleSaveNewItem}
-                placeholder="アイテム名を入力..."
-                className="flex-1 outline-none text-black"
-                disabled={isSaving}
-              />
-            </div>
-          )}
+          <div className="flex bg-white w-full rounded p-3">
+            <input
+              ref={inputRef}
+              type="text"
+              value={newItemText}
+              onChange={(e) => setNewItemText(e.target.value)}
+              onKeyDown={handleKeyPress}
+              onBlur={handleSaveNewItem}
+              placeholder="アイテム名を入力..."
+              className="flex-1 outline-none text-black"
+              disabled={isSaving}
+            />
+          </div>
 
           {/* スペーサー - ボタンの高さ分確保 */}
           <div className="h-24"></div>
-
         </div>
-
-   
-          {/* New Item ボタン - 横長100%幅 */}
-          {!showNewItemInput && (
-            <button 
-              onClick={() => setShowNewItemInput(true)} 
-              className="fixed bottom-0 left-0 right-0 w-full flex items-center justify-center space-x-2 bg-orange-500 text-white py-4 hover:bg-orange-600 transition-all z-50"
-            >
-              <PlusIcon className="h-6 w-6" />
-              <span className="font-semibold">New Item</span>
-            </button>
-          )}
       </div>    
     </> 
     );
