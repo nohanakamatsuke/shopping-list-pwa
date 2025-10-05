@@ -72,15 +72,15 @@ export default function Header() {
 
         {/* サイドメニュー */}
         {isAuthenticated && (
-        <div className={`fixed top-0 right-0 h-full w-65 bg-white shadow-lg transform transition-transform duration-300 ease-in-out z-50 ${
+        <div className={`fixed top-0 right-0 h-full w-56 bg-white shadow-lg transform transition-transform duration-300 ease-in-out z-50 ${
           isMenuOpen ? 'translate-x-0' : 'translate-x-full'
         }`}>
           {/* メニューヘッダー */}
           <div className="bg-custom-red text-white p-4 ">
             <div className="flex items-center justify-between">
               <div>
-                <p className="font-medium">{user?.displayName || 'ユーザー'}</p>
-                <p className="text-sm opacity-90">{user?.email}</p>
+                <p className="text-sm">{user?.displayName || 'ユーザー'}</p>
+                <p className="text-xs opacity-90">{user?.email}</p>
               </div>
               <button
                 onClick={closeMenu}
