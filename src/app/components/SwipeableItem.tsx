@@ -56,7 +56,6 @@ export default function SwipeableItem({ id, name, isChecked, onToggleCheck, onDe
   // 視覚的なフィードバック用の計算
   const translateX = (swipeProgress / 100) * maxSwipePixels;
   const deleteOpacity = Math.min(1, swipeProgress / (deleteThreshold * 0.8));
-  const deleteScale = 0.8 + (swipeProgress / 100) * 0.4; // テキストがやや拡大（0.8〜1.2）
   const deleteBackgroundColor = `rgba(239, 68, 68, ${deleteOpacity})`;
 
 

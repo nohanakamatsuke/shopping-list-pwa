@@ -226,7 +226,6 @@ export default function ItemListClient({ shopId }: ItemListClientProps){
 
           {/* 入力ボックス */}
           <div className="flex gap-2 items-center">
-            <div className="flex bg-white flex-1 rounded p-3">
             <div
                 ref={inputRef}
                 contentEditable
@@ -241,13 +240,19 @@ export default function ItemListClient({ shopId }: ItemListClientProps){
                 }}
                 className="flex-1 outline-none text-black p-3 bg-white rounded"
                 suppressContentEditableWarning
-              >
-            </div>
-            </div>
-            
+                data-placeholder={!newItemText ? "アイテム名を入力..." : ""}
+            />
+
+            {/* Placeholder表示用のスタイル */}
+            <style jsx>{`
+              [contenteditable][data-placeholder]:empty:before {
+                content: attr(data-placeholder);
+                color: #9CA3AF;
+                pointer-events: none;
+              }
+            `}</style>              
           </div>
-          {/* スペーサー - ボタンの高さ分確保 */}
-          <div className="h-24"></div>
+
         </div>
       </div>    
     </> 
