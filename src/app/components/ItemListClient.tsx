@@ -83,39 +83,64 @@ export default function ItemListClient({ shopId }: ItemListClientProps){
   // 所有者判定
   const isOwner = shop && user && shop.owner_id == user.uid;
 
-  const handleKeyPress = async (e: React.KeyboardEvent) => {
-    if (e.key === 'Enter') {
-      e.preventDefault();
-      e.stopPropagation(); // イベント伝播を停止
-      
-      if(!newItemText.trim() || isSaving) return;
-      
-      try {
-        setIsSaving(true);
-        
-        const savedItem = await addItem(shopId as string, {
-          name: newItemText.trim()
-        }) as {id: string; name: string; is_checked: boolean;};
-        
-        setItems(prevItems => [...prevItems, savedItem]);
-        setNewItemText("");
-        
-        // モバイルでも確実にフォーカスを維持
-        requestAnimationFrame(() => {
-          inputRef.current?.focus();
-        });
-        
-      } catch(error) {
-        console.error('アイテム追加エラー:', error);
-        alert('アイテムの追加に失敗しました。');
-      } finally {
-        setIsSaving(false);
-      }
-    } else if (e.key === 'Escape') {
-      setNewItemText("");
-      inputRef.current?.blur();
+// Enterキーで保存して次の入力へ
+const handleKeyPress = async (e: React.KeyboardEvent) => {
+  if (e.key === 'Enter') {
+    e.preventDefault();
+    
+    if(!newItemText.trim() || isSaving) {
+      // 空の場合は保存せず、フォーカスだけ維持
+      return;
     }
-  };
+    
+    try {
+      setIsSaving(true);
+      
+      const savedItem = await addItem(shopId as string, {
+        name: newItemText.trim()
+      }) as {id: string; name: string; is_checked: boolean;};
+      
+      setItems(prevItems => [...prevItems, savedItem]);
+      setNewItemText(""); // 次の入力のためにクリア
+      
+      // キーボードを開いたまま次の入力へ
+      setTimeout(() => {
+        inputRef.current?.focus();
+      }, 50);
+      
+    } catch(error) {
+      console.error('アイテム追加エラー:', error);
+      alert('アイテムの追加に失敗しました。');
+    } finally {
+      setIsSaving(false);
+    }
+  } else if (e.key === 'Escape') {
+    setNewItemText("");
+    inputRef.current?.blur();
+  }
+};
+
+// Done押下時に保存
+const handleSaveNewItem = async () => {
+  if(!newItemText.trim() || isSaving) return;
+  
+  try {
+    setIsSaving(true);
+    
+    const savedItem = await addItem(shopId as string, {
+      name: newItemText.trim()
+    }) as {id: string; name: string; is_checked: boolean;};
+    
+    setItems(prevItems => [...prevItems, savedItem]);
+    setNewItemText("");
+    
+  } catch(error) {
+    console.error('アイテム追加エラー:', error);
+    alert('アイテムの追加に失敗しました。');
+  } finally {
+    setIsSaving(false);
+  }
+};
 
   // アイテム削除処理
   const handleDeleteItem = useCallback(async (itemId: string) => {
@@ -196,7 +221,7 @@ export default function ItemListClient({ shopId }: ItemListClientProps){
             />
           ))}
 
-          {/* 新規アイテム入力ボックス */}
+          {/* 入力ボックス */}
           <div className="flex bg-white w-full rounded p-3">
             <input
               ref={inputRef}
@@ -204,6 +229,7 @@ export default function ItemListClient({ shopId }: ItemListClientProps){
               value={newItemText}
               onChange={(e) => setNewItemText(e.target.value)}
               onKeyDown={handleKeyPress}
+              onBlur={handleSaveNewItem}
               placeholder="アイテム名を入力..."
               className="flex-1 outline-none text-black"
               disabled={isSaving}
