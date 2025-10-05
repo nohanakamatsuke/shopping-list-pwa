@@ -66,13 +66,13 @@ export async function addItem(shopId: string, itemData: {name: string }) {
     // 保存したドキュメントを再取得して返す
     const newDocSnapshot = await getDoc(docRef);
     
-    if (!newDocSnapshot.exists()){
+    if (newDocSnapshot.exists()){
       return {
         id: newDocSnapshot.id,
         ...newDocSnapshot.data()
       };
     }else{
-      console.error('ドキュメントの取得にエラーが発生しました');
+      throw new Error('ドキュメントの取得に失敗しました');
     }
   }catch(error){
     console.error('アイテム追加エラー', error);
