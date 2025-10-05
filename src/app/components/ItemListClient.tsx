@@ -213,28 +213,29 @@ export default function ItemListClient({ shopId }: ItemListClientProps){
             />
           ))}
           
+          {/* 新規アイテム入力ボックス - リスト内に配置 */}
+          {showNewItemInput && (
+            <div className="flex bg-white w-full rounded p-3">
+              <input
+                ref={inputRef}
+                type="text"
+                value={newItemText}
+                onChange={(e) => setNewItemText(e.target.value)}
+                onKeyDown={handleKeyPress}
+                onBlur={handleSaveNewItem}
+                placeholder="アイテム名を入力..."
+                className="flex-1 outline-none text-black"
+                disabled={isSaving}
+              />
+            </div>
+          )}
+
           {/* スペーサー - ボタンの高さ分確保 */}
           <div className="h-24"></div>
 
         </div>
 
-        {/* 新規アイテム入力エリア - 横長100%幅 */}
-        {showNewItemInput && (
-          <div className="fixed bottom-0 left-0 right-0 w-full bg-white p-4 shadow-2xl z-50 border-t border-gray-200">
-            <input
-              ref={inputRef}
-              type="text"
-              value={newItemText}
-              onChange={(e) => setNewItemText(e.target.value)}
-              onKeyDown={handleKeyPress}
-              onBlur={handleSaveNewItem}
-              placeholder="アイテム名を入力..."
-              className="w-full outline-none text-black text-lg"
-              disabled={isSaving}
-            />
-          </div>
-        )}
-
+   
           {/* New Item ボタン - 横長100%幅 */}
           {!showNewItemInput && (
             <button 

@@ -82,7 +82,7 @@ export default function SwipeableItem({ id, name, isChecked, onToggleCheck, onDe
           type="checkbox"
           checked={isChecked}
           onChange={() => onToggleCheck(id, isChecked)}
-          className="w-5 ml-3 my-auto"
+          className="h-4 w-4 ml-3 my-auto rounded-full"
           aria-label={`${name}のステータスを切り替え`}
         />
         <div className="p-2 pr-10 w-full">
