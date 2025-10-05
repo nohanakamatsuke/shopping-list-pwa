@@ -104,7 +104,7 @@ export default function ItemListClient({ shopId }: ItemListClientProps){
   }, []);
   
   if (loading) {
-    return <div>読み込み中...</div>;
+    return <div className="mt-24">読み込み中...</div>;
   }
 
   return(
@@ -112,7 +112,7 @@ export default function ItemListClient({ shopId }: ItemListClientProps){
     <>
       <div className="w-full max-w-[85%] md:max-w-[50%] mx-auto self-start mt-12">
         
-        <div className="flex flex-col space-y-4">
+        <div className="flex flex-col space-y-3">
           {shop &&(
             <div className="flex justify-between items-center">
               <h1 className="text-custom-red text-2xl font-bold">{shop.name}</h1>

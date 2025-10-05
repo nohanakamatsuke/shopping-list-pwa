@@ -151,12 +151,12 @@ export default function FriendsPage() {
 
   // 認証確認
   if (authLoading) {
-    return <div className="flex justify-center items-center">認証確認中...</div>;
+    return <div className="flex justify-center items-center mt-24">認証確認中...</div>;
   }
 
   if (!isAuthenticated) {
     return (
-      <div className="flex justify-center items-center">
+      <div className="flex justify-center items-center mt-24">
         <div className="text-center">
           <h2 className="text-xl mb-4">ログインが必要です</h2>
           <Link href="/login" className="px-4 py-2 bg-custom-red text-white rounded">
@@ -168,11 +168,11 @@ export default function FriendsPage() {
   }
 
   if (loading) {
-    return <div className="flex justify-center items-center">読み込み中...</div>;
+    return <div className="flex justify-center items-center mt-24">読み込み中...</div>;
   }
 
   return (
-    <div className="w-full max-w-lg mx-auto px-6">
+    <div className="w-full max-w-lg mx-auto px-6 mt-24">
       <h1 className="text-2xl font-bold text-white mb-6">友達</h1>
 
         {/* 申請リスト - 申請がある場合のみ表示 */}

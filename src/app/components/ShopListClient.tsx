@@ -88,7 +88,7 @@ export default function ShopListClient(){
   }
 
   return(
-    <div className="flex flex-col space-y-4 w-[85%] md:w-1/2 mx-auto mt-13">
+    <div className="flex flex-col space-y-3 w-[85%] md:w-1/2 mx-auto mt-13">
       {shops.length > 0 ? (
         shops.map(shop =>(
           <Link key={shop.id} href={`/shop/${shop.id}`} className="flex bg-white w-full rounded">
