@@ -42,7 +42,7 @@ const LoginPage: React.FC = () => {
       }
 
       console.log('ログイン成功：', userCredential.user);
-      alert('ログインしました！');
+      // alert('ログインしました！');
       // ホーム画面に遷移
       router.push('/');
     }

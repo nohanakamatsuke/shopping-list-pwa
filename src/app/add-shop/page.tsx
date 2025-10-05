@@ -29,7 +29,7 @@ export default function AddShopPage() {
         created_at: serverTimestamp()
       });
       console.log('お店作成成功：', docRef.id);
-      alert('お店を追加しました！');
+      // alert('お店を追加しました！');
 
       // メインページに戻る
       router.push('/');
@@ -43,7 +43,7 @@ export default function AddShopPage() {
   };
 
   return (
-    <div className="w-full max-w-lg mx-auto px-6">
+    <div className="w-full max-w-lg mx-auto px-6 mt-24">
       <h1 className="text-2xl font-bold text-white mb-6">新しいお店を追加</h1>
       
       {error && (
@@ -91,9 +91,9 @@ export default function AddShopPage() {
       </form>
 
       {/* デバッグ情報（開発中のみ） */}
-      <div className="mt-4 p-2 bg-gray-100 rounded text-sm text-gray-600">
+      {/* <div className="mt-4 p-2 bg-gray-100 rounded text-sm text-gray-600">
         <p>現在のユーザーID: {userId}</p>
-      </div>
+      </div> */}
     </div>
   );
 }

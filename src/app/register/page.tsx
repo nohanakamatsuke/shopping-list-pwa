@@ -42,7 +42,7 @@ const SignUpPage: React.FC = () => {
       })
       console.log('userコレクションに保存完了!');
 
-      alert('アカウントを作成しました！');
+      // alert('アカウントを作成しました！');
       // ホーム画面に遷移
       router.push('/');
     }
