@@ -1,7 +1,7 @@
 'use client';
 
-import { useCallback, useEffect, useState } from "react";
-import { deleteItem, getAllItemsByShopId, updateItemCheckStatus } from "../lib/itemListService";
+import { useCallback, useEffect, useRef, useState } from "react";
+import { addItem, deleteItem, getAllItemsByShopId, updateItemCheckStatus } from "../lib/itemListService";
 import { getShopById } from "../lib/shopService";
 import { PlusIcon } from "@heroicons/react/16/solid";
 import { useRouter } from "next/navigation";
@@ -21,9 +21,15 @@ export default function ItemListClient({ shopId }: ItemListClientProps){
   const [shop, setShop] = useState<{ [key: string]: string; id: string } | null>(null);
   const [items, setItems] = useState<{ id: string; name: string; is_checked: boolean }[]>([]);
   const [hideCompleted, setHideCompleted] = useState(false);
-  const[loading, setLoading]  = useState(true);
-  const[showShareModal, setShowShareModal] = useState(false);
+  const [loading, setLoading]  = useState(true);
+  const [showShareModal, setShowShareModal] = useState(false);
+  const [showNewItemInput, setShowNewItemInput] = useState(false);
+  const [newItemText, setNewItemText] = useState("");
+  const [isSaving, setIsSaving] = useState(false);
+  const inputRef = useRef<HTMLInputElement>(null);
 
+
+  // データ取得
   useEffect(() => {
     async function fetchData(){
       try{
@@ -52,12 +58,13 @@ export default function ItemListClient({ shopId }: ItemListClientProps){
     fetchData();
   }, [shopId]);
 
-  // アイテム追加ページへの遷移処理
-  const router = useRouter();
+  // 新規入力エリアを表示したら自動フォーカス
+  useEffect(() => {
+    if (showNewItemInput && inputRef.current) {
+      inputRef.current.focus();
+    }
+  }, [showNewItemInput]);
 
-  const handleAddItem = () => {
-    router.push(`/shop/${shopId}/add`);
-  };
 
   // チェックボックスの状態変更処理
   const handleCheckChange = async (itemId: string, currentStatus: boolean) => {
@@ -87,6 +94,44 @@ export default function ItemListClient({ shopId }: ItemListClientProps){
 
   // 所有者判定
   const isOwner = shop && user && shop.owner_id == user.uid;
+
+
+  // 新規アイテム保存処理
+  const handleSaveNewItem = async () => {
+    if(!newItemText.trim() || isSaving) return;
+    
+    try{
+      setIsSaving(true);
+
+      // addItem関数を呼び出し（shopIdとitemDataを別々に渡す）
+      const savedItem = await addItem(shopId as string, {
+        name: newItemText.trim()
+      }) as {id: string; name: string; is_checked: boolean;};
+
+      // ローカル状態を更新
+      setItems(prevItems => [...prevItems, savedItem]);
+
+      // 入力フィールドをリセット
+      setNewItemText("");
+      setShowNewItemInput(false);
+
+    }catch(error){
+      console.error('アイテム追加エラー:', error);
+      alert('アイテムの追加に失敗しました。');
+    }finally{
+      setIsSaving(false);
+    }
+  };
+
+  // Enterキーで保存、Escapeでキャンセル
+  const handleKeyPress = (e: React.KeyboardEvent) => {
+    if (e.key === 'Enter') {
+      handleSaveNewItem();
+    } else if (e.key === 'Escape') {
+      setShowNewItemInput(false);
+      setNewItemText("");
+    }
+  };
 
 
   // アイテム削除処理
@@ -127,13 +172,6 @@ export default function ItemListClient({ shopId }: ItemListClientProps){
                   </button>
                 )}
 
-                <button
-                  onClick={handleAddItem}
-                  aria-label="アイテムを追加"
-                  className="mr-12">
-                    <PlusIcon className="h-8 w-8 text-custom-red rounded"/>
-                </button>
-
                 {/* 友達共有モーダル */}
                 {isOwner && (
                   <ShareModal
@@ -164,7 +202,6 @@ export default function ItemListClient({ shopId }: ItemListClientProps){
             </label>
           </div>
 
-
           {filteredItems.map(item => (
             <SwipeableItem 
               key={item.id}
@@ -174,9 +211,40 @@ export default function ItemListClient({ shopId }: ItemListClientProps){
               onToggleCheck={handleCheckChange}
               onDelete={handleDeleteItem}
             />
-
           ))}
+          
+          {/* スペーサー - ボタンの高さ分確保 */}
+          <div className="h-24"></div>
+
         </div>
+
+        {/* 新規アイテム入力エリア - 横長100%幅 */}
+        {showNewItemInput && (
+          <div className="fixed bottom-0 left-0 right-0 w-full bg-white p-4 shadow-2xl z-50 border-t border-gray-200">
+            <input
+              ref={inputRef}
+              type="text"
+              value={newItemText}
+              onChange={(e) => setNewItemText(e.target.value)}
+              onKeyDown={handleKeyPress}
+              onBlur={handleSaveNewItem}
+              placeholder="アイテム名を入力..."
+              className="w-full outline-none text-black text-lg"
+              disabled={isSaving}
+            />
+          </div>
+        )}
+
+          {/* New Item ボタン - 横長100%幅 */}
+          {!showNewItemInput && (
+            <button 
+              onClick={() => setShowNewItemInput(true)} 
+              className="fixed bottom-0 left-0 right-0 w-full flex items-center justify-center space-x-2 bg-orange-500 text-white py-4 hover:bg-orange-600 transition-all z-50"
+            >
+              <PlusIcon className="h-6 w-6" />
+              <span className="font-semibold">New Item</span>
+            </button>
+          )}
       </div>    
     </> 
     );
